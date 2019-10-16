@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+    web:
+        build: .
+        env_file: database.conf
+        ports:
+            - "5000:5000"
+        volumes:
+            - .:/code
+        depends_on:
+            - database
+    database:
+        container_name: intu_database
+        image: postgres:11
+        env_file: database.conf
+        ports:
+            - 5434:5432
+        volumes:
+            - db_volume:/var/lib/postgresql/data
+volumes:
+    db_volume:
