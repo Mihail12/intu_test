@@ -1,3 +1,4 @@
+import json
 import os
 import unittest
 
@@ -55,12 +56,18 @@ class BasicTests(unittest.TestCase):
         self.assertEqual(category_type.name, response.json['name'])
 
     def test_add_category(self):
-        response = self.app.post('/add_retailer/', data={"retailer": "men musical instruments"})
-        self.assertEqual('OK', response.data)
-        retailor = Retailer.query.filter_by(name="men musical instruments")
-        self.assertEqual(1, retailor.count())
-        category = Category.query.filter_by(retailor=retailor.first())
-        self.assertEqual(category.gender, GenderEnum.male.key)
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        data = {"retailer": "men musical instruments"}
+        response = self.app.post('/add_retailer/', data=json.dumps(data), headers=headers)
+        self.assertEqual('OK', response.data.decode("utf-8"))
+        retailer = Retailer.query.filter_by(name="men musical instruments")
+        self.assertEqual(1, retailer.count())
+        category = Category.query.filter_by(retailer=retailer.first())
+        self.assertEqual(category.first().gender, GenderEnum.male)
 
 
 if __name__ == "__main__":
